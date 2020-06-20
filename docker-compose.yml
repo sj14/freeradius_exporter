@@ -1,0 +1,43 @@
+version: '3'
+services:
+  freeradius-main:
+    image: 'freeradius/freeradius-server'
+    command: -X
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.1
+    ports:
+      - '18120-18121:18120-18121/udp'
+      - '1812-1813:1812-1813/udp'
+    volumes:
+      - ./data/sites-enabled:/etc/freeradius/sites-enabled
+      - ./data/proxy.conf:/etc/freeradius/proxy.conf
+      - ./data/clients.conf:/etc/raddb/clients.conf
+  freeradius-hs0:
+    image: 'freeradius/freeradius-server'
+    command: -X
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.2
+    volumes:
+      - ./data/sites-enabled:/etc/freeradius/sites-enabled
+      - ./data/clients.conf:/etc/raddb/clients.conf
+
+  freeradius-hs1:
+    image: 'freeradius/freeradius-server'
+    command: -X
+    networks:
+      testing_net:
+        ipv4_address: 172.28.1.3
+    volumes:
+      - ./data/sites-enabled:/etc/freeradius/sites-enabled
+      - ./data/clients.conf:/etc/raddb/clients.conf
+
+
+# https://blog.alejandrocelaya.com/2017/04/21/set-specific-ip-addresses-to-docker-containers-created-with-docker-compose/
+networks:
+  testing_net:
+      ipam:
+          driver: default
+          config:
+              - subnet: 172.28.0.0/16
